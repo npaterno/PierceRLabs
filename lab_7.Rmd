@@ -1,0 +1,72 @@
+---
+title: 'Math&146 Lab #7'
+author: "N. Paterno"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+library(infer)
+```
+
+For this lab we will be conduct a hypothesis test and construct a confidence interval using a function from the *infer* package. 
+
+The data set is one that is not preloaded into *R*. We'll need to import it first. The file should be located in the same folder this file was in: piracy.csv. 
+
+Let's load the date and take a peak. 
+
+```{r}
+piracy <- read_csv("piracy.csv")
+
+glimpse(piracy)
+```
+
+Here we can see that this data is related to congress. Specifically, it shows how much money was received by each member of congress from lobby groups in support of (money_pro) or against (money_con) anti-piracy legislation. 
+
+Our test/interval will be to determin if there is a differnce in money received by Democrats and Republicans, regardless of which lobby group the money came from. 
+
+## Clean the Data
+
+To clean our data, we'll need to replace missing values with 0 (rationale discussed in lab/the screencast), create a new variable for the sum of money received and filter our the few Independent party observations. 
+
+```{r}
+summary_data <- piracy %>% 
+  mutate(money_pro = replace_na(money_pro, 0), 
+         money_con = replace_na(money_con,0),
+         money_total = money_pro+money_con) %>% 
+  select(-c(money_pro, money_con)) %>%  
+  filter(party!= "I")
+```
+
+Now we're ready to run our test.
+
+## T-Test and Confidence Interval
+
+The function *t_test* will conduct the test and build a confidence interval for us. Syntax is commented in the code below. 
+
+```{r}
+t_test(summary_data, #choose the data frame
+       formula = money_total~party, #define the relationship/variables for testing
+       order = c("D","R"), #choose an order for the mean difference to be calculated
+       mu = 0, #define the null hypothesis
+       alternative = "two.sided", #define the alternative hypothesis
+       var.equal = TRUE, #assume the populations have equal variance
+       conf_int = TRUE, #will calculate a confidence interval for the mean difference as part of the test
+       conf_level = 0.99) #defines the confidence/significance level
+```
+
+From the output, we can conclude there is a difference. Based on the interval is appears that Democrats received more money in relation to the anti-piracy legislation.
+
+## Assignment
+
+In a script file: 
+
+1. Clean the data by replacing missing values with 0 and filtering to a single political party of your choice.
+
+2. Determine if there is a difference in money received from pro lobby groups and con lobby groups. (test and interval)
+
+Save your work in a script file called: LastName_lab7. For example, my assignment file would be Paterno_lab7.R

@@ -1,0 +1,99 @@
+---
+title: 'Math&146 Lab #6'
+author: "N. Paterno"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+library(openintro)
+```
+
+For this lab, we'll once again be using the *speed_gender_height* data set from the *openintro* package. This time we'll learn how to use *R* to calculate probabilities for data that has a normal distribution. 
+
+## Clean the Data
+
+As before, we'll remove all observations that are missing a value for one of the variables. 
+
+```{r}
+plot_data <- speed_gender_height %>% 
+  na.omit()
+```
+
+## Confirm Shape
+
+Before we start calculating probabilities, we'll need to plot our data and confirm the distribution is normal (this was the assignment from the previous lab).
+
+```{r}
+ggplot(plot_data, 
+       aes(speed))+
+  geom_density()
+```
+
+As expected, the distribution is normal. 
+
+## Calculating Probabilities
+
+To calculate probabilities, we'll use the *pnorm* function from the *stats* package. We don't need to load the *stats* package separately as its included in the base set for *R*.
+
+Since we'll be using them repeatedly, our code will be more efficient if we define variables for the mean and standard deviation. 
+
+```{r}
+mean_speed <-  mean(plot_data$speed)
+sd_speed <- sd(plot_data$speed)
+```
+
+
+First, we'll calculate the probability of randomly selecting an individual who has driven more than 100 miles per hour, $P(X>100)$. 
+
+```{r}
+pnorm(100, # x value for probability
+      mean = mean_speed, # mean of the variable
+      sd = sd_speed, # standard deviation of the variable
+      lower.tail = FALSE) # specifices if the probability is < (TRUE) or > (FALSE) 
+```
+
+According to our data, the probability of selecting a person who has driven more than 100 mph is just north of 34%. 
+
+The syntax for the input to the pnorm function is commented in the above code.
+
+Next, we'll calculate $P(x<60)$.
+
+```{r}
+pnorm(60, 
+      mean_speed,
+      sd_speed, 
+      lower.tail = TRUE)
+```
+
+The probability of randomly selecting someone who has driven no faster than 60 mph is 8.54%. 
+
+What about a probability for between two values? $P(60<x<70)$
+
+```{r}
+pnorm(70,
+      mean_speed, 
+      sd_speed,
+      lower.tail = TRUE)-
+  pnorm(60,
+      mean_speed, 
+      sd_speed,
+      lower.tail = TRUE)
+```
+
+There is a 9.23% chance of selecting someone who has driven at most, somewhere between 60 and 70 mph. 
+
+## Assignment
+In a script file: 
+
+1. Clean the data to remove any observations that have missing values and filter to a single gender. 
+
+2. Recalculate the above probabilities with this new data frame.
+
+3. Does the gender you chose appear to have different probabilities than the general population?
+
+Save your work in a script file called: LastName_lab6. For example, my assignment file would be Paterno_lab6.R

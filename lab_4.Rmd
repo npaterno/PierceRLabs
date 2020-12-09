@@ -1,0 +1,131 @@
+---
+title: 'Math&146 Lab #4'
+author: "N. Paterno"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+library(openintro)
+```
+
+In this lab we will learn how to calculate the descriptive statistics for a numeric variable. We'll be using the *teacher* data set from the *openintro* package. As usual, let's look at the data. 
+
+```{r}
+glimpse(teacher)
+```
+
+## Mean, Standard Deviation and Variance
+
+To calculate mean, standard deviation and variance, we'll use the *summarize* function from lab #2 in combination with the functions *mean*, *sd* and *var*. For the examples, we'll focus on the *total* variable. 
+
+```{r}
+teacher_summary_full <- teacher %>% 
+  summarize(mean_total = mean(total),
+            sd_total = sd(total),
+            var_total = var(total))
+
+glimpse(teacher_summary_full)
+```
+
+## Five Number Summary
+
+There are two ways we can calculate the five number summary: as a whole or individually. 
+
+### As a Whole
+
+```{r}
+fivenum(teacher$total)
+```
+### Individually
+To calculate the five number summary individually, we need to *summarize* the data frame and use an index to specify a position in our vector. 
+
+```{r}
+teacher_fivenum <- teacher %>% 
+  summarize(min = fivenum(total)[1],
+            q1 = fivenum(total)[2],
+            md = fivenum(total)[3],
+            q3 = fivenum(total)[4],
+            max = fivenum(total)[5])
+
+glimpse(teacher_fivenum)
+```
+
+Based on the mean and median, the data appears to be skewed left. We can confirm this with a quick histogram. 
+
+```{r}
+ggplot(teacher, 
+       aes(total))+
+  geom_histogram(binwidth = 2000)
+```
+
+## Assignment
+In a script file: 
+
+1. Calculate the mean, standard deviation and variance for the *retirement* variable. 
+
+2. Calculate the five number summary for the *retirement* variable as whole and individually.
+
+Save your work in a script file called: LastName_lab4. For example, my assignment file would be Paterno_lab4.R
+
+## Extra Material
+
+If we were doing a more detailed analysis, we may want to discover what role experience and college degree have in determining someones salary. Later in the quarter we will learn specific statistical tests that will do this for us. For now, we can do some calculations to get a rough idea. 
+
+### Grouping by College Degree
+
+```{r}
+teacher_summary_degree <- teacher %>% 
+  group_by(degree) %>% 
+  summarize(mean_total = mean(total),
+            sd_total = sd(total),
+            var_total = var(total))
+
+glimpse(teacher_summary_degree)
+
+teacher_fivenum_degree <- teacher %>% 
+  group_by(degree) %>% 
+  summarize(min = fivenum(total)[1],
+            q1 = fivenum(total)[2],
+            md = fivenum(total)[3],
+            q3 = fivenum(total)[4],
+            max = fivenum(total)[5])
+
+glimpse(teacher_fivenum_degree)
+```
+
+### Grouping by Experience
+
+```{r}
+teacher_summary_year <- teacher %>% 
+  group_by(years) %>% 
+  summarize(mean_total = mean(total),
+            sd_total = sd(total),
+            var_total = var(total))
+
+glimpse(teacher_summary_year)
+
+teacher_fivenum_year <- teacher %>% 
+  group_by(years) %>% 
+  summarize(min = fivenum(total)[1],
+            q1 = fivenum(total)[2],
+            md = fivenum(total)[3],
+            q3 = fivenum(total)[4],
+            max = fivenum(total)[5])
+
+glimpse(teacher_fivenum_year)
+```
+
+We can also visually separate our ggplot image using color. 
+
+```{r}
+ggplot(teacher, 
+       aes(years, total, color = degree))+
+  geom_point()
+```
+
+Here we can see that, aside from one teacher, those with a Master's degree consistently earn more than those with a Bachelor's. Additionally, there appears to be a cap on salary as it increases linearly before 20 years of experience. After that point, growth is much slower. 

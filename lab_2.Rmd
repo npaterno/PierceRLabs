@@ -1,0 +1,130 @@
+---
+title: 'Math&146 Lab #2'
+author: "N. Paterno"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+```
+
+For this lab, we will be looking at variable, types, arithmetic, data frames and a *little bit* of data wrangling. 
+
+## Variables and Types
+
+First we will look at variables. As we've seen, there are two classes of variables: numeric and categorical. In *R* there are many types of variables. Numeric variables are typically stored as *INTEGER* (discrete) or *DOUBLE* (continuous). Categorical variables are typically stored as *CHARACTER* or *FACTOR*.
+
+In the code chunk below, we'll define a numeric variable and a categorical variable. 
+
+```{r}
+x <- 12
+y <- "yellow"
+```
+
+The <- symbol is the assignment operator in *R*. There you can type < and - separately or use keyboard shortcuts. On Windows its alt- and a Mac its option-. 
+
+Let's check how these are stored.
+
+```{r}
+typeof(x)
+typeof(y)
+```
+
+The numeric variable, x, is stored as a double and the categorical variable, y, is a character. It is important to note that character variables should always use quotes. 
+
+Since every data set we see has more than one entry, it would be useful to be able to store more than one value. Luckily, we can! These are called *vectors*.
+
+```{r}
+x_2 <- c(12, 10, 8, 6, 4, 2)
+```
+
+This store the *c*ollection of doubles in the variable x_2.
+
+## Arithmetic
+
+We saw in lab #1 that we can use *R* like a giant, overpowered calculator. We can do this with variables too. 
+
+```{r}
+x+5
+x/24
+```
+
+We can do arithmetic with vectors too!
+
+```{r}
+x_2+5
+x_2/24
+```
+
+## Data Frames
+
+When we work with data sets in *R*, we are viewing them as data frame. A data frame is a structure where each column is a variable and each row is an observation.
+
+Here is a data frame of my immediate family. First I will need to define each variable as a vector and then join them together into a data frame. The *head* function will show us the first six observations in the data frame.
+
+```{r}
+name <- c("Jim", "Peggy", "Kyla", "Nick", "Alex", "Tori", "Belinda", "Nathan", "Kelsey", "Tommy")
+
+relationship <- c("dad", "mom", "sister", "me", "brother", "sister", "wife", "son", "sister-in-law", "brother-in-law")
+
+age <- c(58, 58, 36, 33, 31, 29, 34, 2, 32, 29)
+
+family <- data.frame(name, age, relationship)
+
+head(family)
+```
+
+## Data Wrangling
+
+Data wrangling is the process of 'cleaning' or manipulating a data set into a form that we can analyze. For this section, we will use the *gov_poll* data set from the *openintro* package. Let's look at the data set first. 
+
+```{r}
+example_data <- openintro::gov_poll
+
+head(example_data)
+```
+
+This appears to be an approval poll of President Obama. Let's confirm this. We'll use the *unique* function which will give us all unique values of a variable. The input for this function the dataframe$variable.
+
+```{r}
+unique(example_data$poll)
+unique(example_data$eval)
+```
+
+There was more than we thought! This data set *is* an approval poll. However, it is not just for President Obama; it also includes Democrats and Republicans (presumably those in congress).
+
+For our intro to wrangling, we will create a new data frame that focuses on Obama and then calculate his approval/disapproval percentages. 
+
+```{r}
+obama <- example_data %>% 
+  filter(eval == "Obama")
+```
+
+There are a few new things in the above code. First, the pipe operator: %>% . This can be read as "and then" so our new *obama* data frame will start with the *example_data* "and then" will be filtered to only include his approval and disapproval votes. 
+
+The *filter* function input is a logical equation (hence the double =). It will look at each row and determine if it is true or false. True observations are included and false are left out. 
+
+Next, we'll calculate the percentages. To do so we'll need to know how many votes there are total and how many are approval and disapproval. We'll use *group_by* to isolate approve/disapprove, then *summarize* to count the votes for approve/disapprove and finally *mutate* to create new variables for the total number of votes and percentages. 
+
+```{r}
+obama %>% 
+  group_by(poll) %>% 
+  summarize(count = n()) %>% 
+  mutate(total = sum(count), 
+         percent = count/total)
+```
+
+This shows us that, at the time, the President had a 57.75% approval rating and 42.25% disapproval rating. 
+
+## Assignment
+In a script file: 
+
+1. Create a data frame consisting of three people that includes name and age. 
+
+2. Calculate the approval/disapproval ratings for Democrats or Republicans. (This problem is *almost* a copy/paste.)
+
+Save your work in a script file called: LastName_lab2. For example, my assignment file would be Paterno_lab2.R

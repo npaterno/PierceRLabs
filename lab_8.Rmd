@@ -1,0 +1,95 @@
+---
+title: 'Math&146 Lab #8'
+author: "N. Paterno"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+library(palmerpenguins)
+```
+
+For this lab we will be building a scatter plot and least squares regression line, build a linear regression model and make some predictions. 
+
+We'll be using the *penguins* data set from the *palmerpenguins* package. As always, lets glimpse the data. 
+
+```{r}
+glimpse(penguins)
+```
+
+For the examples, I'll focus on the body_mass_g and flipper_length_mm variables. 
+
+## Basic Plot
+
+First, we'll remove missing values, focus on our variables and do a basic scatter to visually determine if there is a linear relationship. 
+
+```{r}
+plot_data <- penguins %>% 
+  select(flipper_length_mm, body_mass_g) %>% 
+  na.omit()
+
+ggplot(plot_data, 
+       aes(flipper_length_mm, body_mass_g))+
+  geom_point()
+```
+
+While its not exact, there does appear to be one.
+
+## Correlation Coefficient
+
+We can confirm what the plot shows us by calculating the correlation coefficient. 
+
+```{r}
+cor(plot_data$body_mass_g,plot_data$flipper_length_mm)
+```
+For the data, we have $r=0.87$. This is a moderate-strong linear relationship.
+
+## Overlaid Plot
+
+Now we'll recreate our scatter plot with the least squares regression line overlaid on top of the data.
+
+```{r}
+ggplot(plot_data, 
+       aes(flipper_length_mm, body_mass_g))+
+  geom_point()+
+  geom_smooth(method = "lm",
+              se = FALSE)
+```
+
+## Build a Model and Make a Prediction
+
+We're ready to build our model and predict. First, we'll use the *lm* function to build the linear model. 
+
+```{r}
+mass_mod <- lm(body_mass_g ~ flipper_length_mm, data = plot_data) 
+```
+
+To make our predictions, we'll need to write our own function that will evaluate a data point on our model. (This code will be needed for the assignment.)
+
+```{r}
+pred <- function(model, value){
+  return(model$coefficients[1]+value*model$coefficients[2])
+}
+```
+
+Finally, we'll predict the mass of a penguin with a flipper length of 200mm.
+
+```{r}
+pred(mass_mod, 200)
+```
+
+According to our model, a penguin with a flipper length of 200mm will have a body mass of 4156.282g.
+
+## Assignment
+
+In a script file: 
+
+1. Clean the data by focusing on bill length and body mass then removing missing values.
+
+2. Repeat the above process (basic scatter, correlation, overlaid scatter, model, prediction) to try and predict body mass from bill length. 
+
+Save your work in a script file called: LastName_lab8. For example, my assignment file would be Paterno_lab8.R

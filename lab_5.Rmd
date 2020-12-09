@@ -1,0 +1,101 @@
+---
+title: 'Math&146 Lab #5'
+author: "N. Paterno"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+library(openintro)
+```
+
+This lab will be brief compared to our last few. We will look at a few different ways to plot our data to determine its shape as either normal, skewed left or skewed right. 
+
+We'll be using the *speed_gender_height* data set from the *openintro* package. Let's see the data. 
+
+```{r}
+glimpse(speed_gender_height)
+```
+
+Here we have a data frame that includes a person's biological gender, height and the maximum speed they have personally driven a car. For the examples I will focus on the *height* variable. 
+
+## Cleaning the Data
+
+To clean the data, I'll remove observations where a height wasn't reported. 
+
+```{r}
+plot_data <- speed_gender_height %>% 
+  na.omit()
+```
+
+## Visuallizing Shape
+
+We'll look at three different plots that can help us visually determine the shape of our data: histogram, frequency polygon and a density curve. 
+
+### Histogram
+
+```{r}
+ggplot(plot_data, 
+       aes(height))+
+  geom_histogram()
+```
+
+It appears that our data is approximately normal (bell shaped). 
+
+### Frequency Polygon
+
+```{r}
+ggplot(plot_data, 
+       aes(height))+
+  geom_freqpoly()
+```
+
+While the curve is not smooth, it does show that the data is approximately normal. 
+
+### Density Curve
+
+```{r}
+ggplot(plot_data, 
+       aes(height))+
+  geom_density()
+```
+
+Here, we essentially have a smoothed version of the frequency polygon. The major difference is that our y-axis is no longer a frequency but a percentage. 
+
+## Assignment
+In a script file: 
+
+1. Clean the data to remove any observations that did not have a reported speed. 
+
+2. Create a histogram, frequency polygon and density curve for speed using the cleaned data.
+
+Save your work in a script file called: LastName_lab5. For example, my assignment file would be Paterno_lab5.R
+
+## Extra Material
+As with the last lab, we'll go a bit further to see if shape is independent of gender. 
+
+We can do this using a *facet_wrap* which will create a separate plot for each gender. 
+
+```{r}
+ggplot(plot_data, 
+       aes(height))+
+  geom_density()+
+  facet_wrap(~gender)
+```
+
+It appears that the data is still approximately normal when we focus on individual genders. 
+
+Another way we could do this is using color. 
+
+```{r}
+ggplot(plot_data, 
+       aes(height, 
+           fill = gender))+
+  geom_density(alpha = 0.5)
+```
+
+The *alpha* argument specifies how see-through the plot is. Closer to 1 is opaque, closer to 0 is transparent.

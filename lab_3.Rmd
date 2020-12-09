@@ -1,0 +1,90 @@
+---
+title: 'Math&146 Lab #3'
+author: "N. Paterno"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(warning = FALSE)
+knitr::opts_chunk$set(message = FALSE)
+
+library(tidyverse)
+library(ggthemes)
+library(openintro)
+```
+
+## Grammar of Graphics
+
+In this lab, we will learn how to generate a histogram, box plot and scatter plot in *R*. We'll do this using *ggplot2*, which is a chapter in the *tidyverse* cookbook. Later in the lab, we'll also use the *ggthemes* cookbook to make our graphs look nicer. 
+
+In this lab, we'll be using the *epa2012* data set from the *openintro* package. Let's look at the data. This time we'll use the *glimpse* function. This will give us variable names, types and the first few values.
+
+```{r}
+glimpse(epa2012)
+```
+
+That's a fairly large data set! We'll narrow it down to only include the manufacturer of the car, the number of cylinders and the gas mileage variables. 
+
+```{r}
+plot_data <- epa2012 %>% 
+  select(c(mfr_name, no_cylinders, city_mpg, hwy_mpg, comb_mpg))
+```
+
+All ggplot graphs will contain a *ggplot* function that identifies the data set and variables to be used and a *geom* function that specifies what to graph. For our examples, we'll use the combined gas mileage. For the scatter plot, we'll need a second variable and use number of cylinders.
+
+### Histogram
+
+```{r}
+ggplot(data = plot_data, 
+       mapping = aes(x = comb_mpg))+
+  geom_histogram()
+```
+
+### Box Plot
+
+```{r}
+ggplot(data = plot_data,
+       mapping = aes(x = comb_mpg))+
+  geom_boxplot()
+```
+
+### Scatter Plot
+
+```{r}
+ggplot(plot_data, 
+       aes(x = no_cylinders,
+           y = comb_mpg))+
+  geom_point()
+```
+
+Success! We've created the graphs we wanted to. However, we don't learn alot from them and they are visually pretty plain. Next we'll make the histogram "publication ready". This means it will look nicer and convey more information via labels or *labs*. 
+
+### Publication Ready Plot
+
+```{r}
+ggplot(data = plot_data, 
+       mapping = aes(x = comb_mpg))+
+  geom_histogram(binwidth = 5, #This makes each column 5 wide
+                 color = "black", #Makes column border black
+                 fill = "cadetblue")+
+  labs(
+    title = "Gas Milage for Model Year 2012",
+    subtitle = "Combined City/Highway",
+    x = "Gas Mileage (mpg)",
+    y = "Number of Cars",
+    caption = "Source: Fueleconomy.gov, Shared MPG Estimates"
+  )+
+  theme_economist()
+```
+
+This chart is much more informative! It clear what the data is, when its from and the chart is easy to read. 
+
+## Assignment
+In a script file: 
+
+1. Create a publication ready box plot. 
+
+2. Create a publication ready scatter plot.
+
+Save your work in a script file called: LastName_lab3. For example, my assignment file would be Paterno_lab3.R
