@@ -27,7 +27,7 @@ glimpse(piracy)
 
 Here we can see that this data is related to congress. Specifically, it shows how much money was received by each member of congress from lobby groups in support of (money_pro) or against (money_con) anti-piracy legislation. 
 
-Our test/interval will be to determin if there is a differnce in money received by Democrats and Republicans, regardless of which lobby group the money came from. 
+Our test/interval will be to determine if there is a difference in money received by Democrats and Republicans, regardless of which lobby group the money came from. 
 
 ## Clean the Data
 
